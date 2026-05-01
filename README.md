@@ -58,8 +58,7 @@ Para rodar os testes:
 ## Modelo de Dados
 Abaixo, a estrutura do banco de dados relacional desenhada para este projeto:
 
-![Diagrama do Banco](<img width="829" height="518" alt="diagrama png" src="https://github.com/user-attachments/assets/45a0df71-4699-434c-a59b-0bc4742b56e3" />
-)
+![Diagrama do Banco](diagrama.png)
 
 ---
 Desenvolvido por **Bárbara Paranhos** - [Meu LinkedIn](https://www.linkedin.com/in/barbpsouza/)
