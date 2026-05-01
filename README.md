@@ -34,6 +34,8 @@ A aplicação funciona como "o cérebro" de um sistema de gestão, permitindo qu
 - **Bean Validation** (Validações de campos)
 - **Maven** (Gerenciador de dependências)
 
+---
+## Como Rodar?
 ### Pré-requisitos
 - Java 17 ou superior instalado.
 
@@ -54,6 +56,8 @@ O projeto conta com testes automatizados focados nas regras de negócio crítica
 
 Para rodar os testes:
 `./mvnw test`
+
+---
 
 ## Modelo de Dados
 Abaixo, a estrutura do banco de dados relacional desenhada para este projeto:
