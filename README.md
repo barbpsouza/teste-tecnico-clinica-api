@@ -61,5 +61,5 @@ Abaixo, a estrutura do banco de dados relacional desenhada para este projeto:
 ![Diagrama do Banco](https://dbdiagram.io/d/Diagrama-Relacional-Banco-de-Dados-69f4d56eddb9320fdcad4b1a)
 
 ---
-Desenvolvido por **Bárbara Paranhos** - [Seu LinkedIn](https://www.linkedin.com/in/barbpsouza/)
+Desenvolvido por **Bárbara Paranhos** - [Meu LinkedIn](https://www.linkedin.com/in/barbpsouza/)
 # Thank U!
