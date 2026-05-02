@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*") // permite que o front acesso a API sem erro
 @RestController
 @RequestMapping("/agendamentos")
+
 public class AgendamentoController{
 
     @Autowired
@@ -29,9 +31,11 @@ public class AgendamentoController{
         return service.agendar(agendamento);
     }
 
-    //rota para cancelar: localhost:8080/agendamentos/1/cancelar?motivo=Desisti
+    // Rota para cancelar: localhost:8080/agendamentos/1/cancelar
     @PutMapping("/{id}/cancelar")
-    public Agendamento cancelar(@PathVariable Long id, @RequestParam String motivo){
-        return service.cancelar(id,motivo);
+    public Agendamento cancelar(@PathVariable Long id, @RequestBody java.util.Map<String, String> body) {
+        String motivo = body.get("motivo");
+        return service.cancelar(id, motivo);
     }
+
 }

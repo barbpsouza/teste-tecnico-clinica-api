@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Clínica - Agendamentos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .status-agendado { color: green; font-weight: bold; }
+        .status-cancelado { color: red; font-weight: bold; }
+        .container { max-width: 1000px; margin: auto; }
+        .btn-cancelar { background: #ff4d4d; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📋 Gestão de Agendamentos</h2>
+
+    <div id="mensagem-erro" style="color: red; margin-bottom: 10px;"></div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Paciente</th>
+            <th>Profissional</th>
+            <th>Data e Hora</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody id="tabelaAgendamentos">
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // URL da sua API
+    const API_URL = 'http://localhost:8080/agendamentos';
+
+    async function listarAgendamentos() {
+        try {
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                const erroTexto = await response.text();
+                throw new Error(erroTexto);
+            }
+
+            const dados = await response.json();
+            const tabela = document.getElementById('tabelaAgendamentos');
+            tabela.innerHTML = '';
+
+            if (Array.isArray(dados)) {
+                dados.forEach(a => {
+                    const dataFormatada = new Date(a.dataHora).toLocaleString('pt-BR');
+                    const statusClasse = a.status === 'AGENDADO' ? 'status-agendado' : 'status-cancelado';
+
+                    tabela.innerHTML += `
+                        <tr>
+                            <td>${a.id}</td>
+                            <td>${a.paciente ? a.paciente.nome : 'N/A'}</td>
+                            <td>${a.profissional}</td>
+                            <td>${dataFormatada}</td>
+                            <td class="${statusClasse}">${a.status}</td>
+                            <td>
+                                ${a.status === 'AGENDADO' ?
+                        `<button class="btn-cancelar" onclick="cancelarAgendamento(${a.id})">Cancelar</button>` :
+                        '---'}
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (error) {
+            console.error("Erro ao carregar front:", error);
+            document.getElementById('mensagem-erro').innerText = "Erro ao carregar dados: " + error.message;
+        }
+    }
+
+    async function cancelarAgendamento(id) {
+        const motivo = prompt("Qual o motivo do cancelamento?");
+        if (!motivo) return;
+
+        try {
+            const response = await fetch(`${API_URL}/${id}/cancelar`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ motivo: motivo }) // Mandando como JSON
+            });
+
+            if (response.ok) {
+                alert("Cancelado com sucesso!");
+                listarAgendamentos();
+            } else {
+                const msg = await response.text();
+                alert("Erro ao cancelar: " + msg);
+            }
+        } catch (error) {
+            alert("Erro na requisição de cancelamento.");
+        }
+    }
+
+    // Carrega a lista assim que abre a página
+    listarAgendamentos();
+</script>
+
+</body>
+</html>

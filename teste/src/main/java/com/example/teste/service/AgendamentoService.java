@@ -11,19 +11,24 @@ import java.util.List;
 
 @Service
 public class AgendamentoService {
+
     @Autowired
     private AgendamentoRepository repository;
 
     public Agendamento agendar(Agendamento agendamento){
-
         //regra 1: não permitir data no passado
-        if(agendamento.getDataHora().isBefore(LocalDateTime.now())){
-            throw new RuntimeException(("ERRO! Não é possível agendar para uma data neste horário exato."));
+        if (agendamento.getDataHora().isBefore(LocalDateTime.now().minusMinutes(1))) {
+            throw new RuntimeException("ERRO! Data no passado.");
         }
 
         //regra2: profissional não pode ter dois agendamentos no mesmo horário
-        var ocupado = repository.findByProfissionalAndDataHora(agendamento.getProfissional(),agendamento.getDataHora()
+        boolean jaOcupado = repository.existsByProfissionalAndDataHora(
+                agendamento.getProfissional(),
+                agendamento.getDataHora()
         );
+        if (jaOcupado) {
+            throw new RuntimeException("O profissional " + agendamento.getProfissional() + " já está ocupado!");
+        }
 
         //regra 3: todo agendamento novo nasce com status agendado
         agendamento.setStatus(StatusAgendamento.AGENDADO);
@@ -34,7 +39,6 @@ public class AgendamentoService {
     public List<Agendamento>listarTodos(){
         return repository.findAll();
     }
-
     public List<Agendamento> listarComFiltros(String paciente, String profissional, StatusAgendamento status) {
         if (paciente != null) {
             return repository.findByPacienteNomeContainingIgnoreCase(paciente);
@@ -49,10 +53,10 @@ public class AgendamentoService {
     }
 
     //metodo para cancelar
-    public Agendamento cancelar(Long id, String motivo){
-        Agendamento agendamento = repository.findById(id).orElseThrow(() -> new RuntimeException("ERRO! Agendamento não encontrado"));
+    public Agendamento cancelar(Long id, String motivo) {
+        Agendamento agendamento = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ERRO! Agendamento não encontrado"));
 
-        //regra 4: mudar status para cancelado e registrar o motivo
         agendamento.setStatus(StatusAgendamento.CANCELADO);
         agendamento.setMotivoCancelamento(motivo);
         return repository.save(agendamento);

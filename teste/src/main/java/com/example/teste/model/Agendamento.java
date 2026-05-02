@@ -16,6 +16,7 @@ public class Agendamento {
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;
 
+    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private String profissional;
     private LocalDateTime dataHora;
 
@@ -26,21 +27,45 @@ public class Agendamento {
 
     // getter e setters
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Paciente getPaciente() { return paciente; }
-    public void setPaciente(Paciente paciente) { this.paciente = paciente; }
+    public Paciente getPaciente() {
+        return paciente;
+    }
+    public void setPaciente(Paciente paciente) {
+        this.paciente = paciente;
+    }
 
-    public String getProfissional() { return profissional; }
-    public void setProfissional(String profissional) { this.profissional = profissional; }
+    public String getProfissional() {
+        return profissional;
+    }
+    public void setProfissional(String profissional) {
+        this.profissional = profissional;
+    }
 
-    public LocalDateTime getDataHora() { return dataHora; }
-    public void setDataHora(LocalDateTime dataHora) { this.dataHora = dataHora; }
+    public LocalDateTime getDataHora() {
+        return dataHora;
+    }
+    public void setDataHora(LocalDateTime dataHora) {
+        this.dataHora = dataHora;
+    }
 
-    public StatusAgendamento getStatus() { return status; }
-    public void setStatus(StatusAgendamento status) { this.status = status; }
+    public StatusAgendamento getStatus() {
+        return status;
+    }
+    public void setStatus(StatusAgendamento status) {
+        this.status = status;
+    }
 
-    public String getMotivoCancelamento() { return motivoCancelamento; }
-    public void setMotivoCancelamento(String motivoCancelamento) { this.motivoCancelamento = motivoCancelamento; }
+    public String getMotivoCancelamento() {
+        return motivoCancelamento;
+    }
+    public void setMotivoCancelamento(String motivoCancelamento) {
+        this.motivoCancelamento = motivoCancelamento;
+    }
 }

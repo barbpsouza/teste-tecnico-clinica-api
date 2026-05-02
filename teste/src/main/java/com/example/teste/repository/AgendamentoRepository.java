@@ -11,7 +11,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     //esse metodo vai procurar se ja existe um agendamento para aquele medico naquele horario
     //o spring data jpa cria a logica sozinho so pelo nome do metodo
     Optional<Agendamento> findByProfissionalAndDataHora(String profissional, LocalDateTime dataHora);
-
+    boolean existsByProfissionalAndDataHora(String profissional, LocalDateTime dataHora);
     //filtros
     List<Agendamento> findByPacienteNomeContainingIgnoreCase(String nome);
     List<Agendamento> findByStatus(StatusAgendamento status);
