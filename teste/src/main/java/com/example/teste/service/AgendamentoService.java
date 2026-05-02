@@ -35,6 +35,19 @@ public class AgendamentoService {
         return repository.findAll();
     }
 
+    public List<Agendamento> listarComFiltros(String paciente, String profissional, StatusAgendamento status) {
+        if (paciente != null) {
+            return repository.findByPacienteNomeContainingIgnoreCase(paciente);
+        }
+        if (profissional != null) {
+            return repository.findByProfissionalContainingIgnoreCase(profissional);
+        }
+        if (status != null) {
+            return repository.findByStatus(status);
+        }
+        return repository.findAll(); //se não vier filtro nenhum, traz tudo
+    }
+
     //metodo para cancelar
     public Agendamento cancelar(Long id, String motivo){
         Agendamento agendamento = repository.findById(id).orElseThrow(() -> new RuntimeException("ERRO! Agendamento não encontrado"));
