@@ -40,16 +40,7 @@ public class AgendamentoService {
         return repository.findAll();
     }
     public List<Agendamento> listarComFiltros(String paciente, String profissional, StatusAgendamento status) {
-        if (paciente != null) {
-            return repository.findByPacienteNomeContainingIgnoreCase(paciente);
-        }
-        if (profissional != null) {
-            return repository.findByProfissionalContainingIgnoreCase(profissional);
-        }
-        if (status != null) {
-            return repository.findByStatus(status);
-        }
-        return repository.findAll(); //se não vier filtro nenhum, traz tudo
+        return repository.buscarComFiltros(paciente, profissional, status);
     }
 
     //metodo para cancelar

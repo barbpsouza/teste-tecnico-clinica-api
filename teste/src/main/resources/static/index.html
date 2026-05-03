@@ -2,25 +2,50 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Clínica - Agendamentos</title>
+    <title>Clínica - Gestão de Agendamentos</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f9; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        th { background-color: #007bff; color: white; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
-        .status-agendado { color: green; font-weight: bold; }
-        .status-cancelado { color: red; font-weight: bold; }
-        .container { max-width: 1000px; margin: auto; }
-        .btn-cancelar { background: #ff4d4d; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f4f4f9; color: #333; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+
+        /* Estilo dos Filtros */
+        .filtros { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; background: #e9ecef; padding: 15px; border-radius: 8px; }
+        .filtros input, .filtros select { padding: 8px; border: 1px solid #ccc; border-radius: 5px; flex: 1; min-width: 150px; }
+        .btn-buscar { background: #007bff; color: white; border: none; padding: 8px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .btn-buscar:hover { background: #0056b3; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border-bottom: 1px solid #ddd; padding: 15px; text-align: left; }
+        th { background-color: #f8f9fa; color: #555; }
+        tr:hover { background-color: #f1f1f1; }
+
+        .status-agendado { color: #28a745; font-weight: bold; background: #e8f5e9; padding: 4px 8px; border-radius: 4px; }
+        .status-cancelado { color: #dc3545; font-weight: bold; background: #ffebee; padding: 4px 8px; border-radius: 4px; }
+        .btn-cancelar { background: #ff4d4d; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; }
+        .btn-cancelar:hover { background: #cc0000; }
+
+        .header-projeto { text-align: center; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📋 Gestão de Agendamentos</h2>
+    <div class="header-projeto">
+        <img src="https://imagens.ne10.uol.com.br/veiculos/_midias/jpg/2022/02/03/806x444/1_marca_mv_nova-20528372.jpg" width="300" alt="Dev Cat">
+        <h2> Gestão de Agendamentos</h2>
+    </div>
 
-    <div id="mensagem-erro" style="color: red; margin-bottom: 10px;"></div>
+    <div class="filtros">
+        <input type="text" id="buscaPaciente" placeholder="Filtrar por Paciente...">
+        <input type="text" id="buscaProfissional" placeholder="Filtrar por Médico...">
+        <select id="buscaStatus">
+            <option value="">Todos os Status</option>
+            <option value="AGENDADO">Agendado</option>
+            <option value="CANCELADO">Cancelado</option>
+        </select>
+        <button class="btn-buscar" onclick="listarAgendamentos()">🔍 Buscar</button>
+    </div>
+
+    <div id="mensagem-erro" style="color: red; margin-bottom: 10px; font-weight: bold;"></div>
 
     <table>
         <thead>
@@ -38,13 +63,25 @@
     </table>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    // URL da sua API
     const API_URL = 'http://localhost:8080/agendamentos';
 
     async function listarAgendamentos() {
         try {
-            const response = await fetch(API_URL);
+            // Pegando os valores dos filtros
+            const paciente = document.getElementById('buscaPaciente').value;
+            const profissional = document.getElementById('buscaProfissional').value;
+            const status = document.getElementById('buscaStatus').value;
+
+            // Construindo a URL com Query Params para o filtro
+            const url = new URL(API_URL);
+            if (paciente) url.searchParams.append('paciente', paciente);
+            if (profissional) url.searchParams.append('profissional', profissional);
+            if (status) url.searchParams.append('status', status);
+
+            const response = await fetch(url);
 
             if (!response.ok) {
                 const erroTexto = await response.text();
@@ -66,7 +103,7 @@
                             <td>${a.paciente ? a.paciente.nome : 'N/A'}</td>
                             <td>${a.profissional}</td>
                             <td>${dataFormatada}</td>
-                            <td class="${statusClasse}">${a.status}</td>
+                            <td><span class="${statusClasse}">${a.status}</span></td>
                             <td>
                                 ${a.status === 'AGENDADO' ?
                         `<button class="btn-cancelar" onclick="cancelarAgendamento(${a.id})">Cancelar</button>` :
@@ -78,34 +115,44 @@
             }
         } catch (error) {
             console.error("Erro ao carregar front:", error);
-            document.getElementById('mensagem-erro').innerText = "Erro ao carregar dados: " + error.message;
+            document.getElementById('mensagem-erro').innerText = "⚠️ Erro: " + error.message;
         }
     }
 
     async function cancelarAgendamento(id) {
-        const motivo = prompt("Qual o motivo do cancelamento?");
+        // Usando SweetAlert para o motivo do cancelamento (Fica fofinho)
+        const { value: motivo } = await Swal.fire({
+            title: 'Cancelar Agendamento',
+            input: 'text',
+            inputLabel: 'Qual o motivo do cancelamento?',
+            inputPlaceholder: 'Ex: Paciente desistiu',
+            showCancelButton: true,
+            confirmButtonColor: '#ff4d4d',
+            confirmButtonText: 'Confirmar Cancelamento',
+            cancelButtonText: 'Voltar'
+        });
+
         if (!motivo) return;
 
         try {
             const response = await fetch(`${API_URL}/${id}/cancelar`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ motivo: motivo }) // Mandando como JSON
+                body: JSON.stringify({ motivo: motivo })
             });
 
             if (response.ok) {
-                alert("Cancelado com sucesso!");
+                Swal.fire('Cancelado!', 'O agendamento foi removido.', 'success');
                 listarAgendamentos();
             } else {
                 const msg = await response.text();
-                alert("Erro ao cancelar: " + msg);
+                Swal.fire('Erro!', msg, 'error');
             }
         } catch (error) {
-            alert("Erro na requisição de cancelamento.");
+            Swal.fire('Erro!', 'Não foi possível falar com o servidor.', 'error');
         }
     }
 
-    // Carrega a lista assim que abre a página
     listarAgendamentos();
 </script>
 
