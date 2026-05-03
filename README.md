@@ -45,6 +45,8 @@ conflitos de horário para o mesmo profissional.
 
 **Cancelamento com Motivo:** Ao cancelar, o status muda para CANCELADO e o motivo é registrado.
 
+**Filtragem de Agendamentos** Filtros por pacientes, profissional ou status.
+
 ---
 
 ## Tecnologias e Ferramentas
